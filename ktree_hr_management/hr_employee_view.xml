@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+       
+       
+       <record id="kt_hr_holidays_holidays_filter_inherti" model="ir.ui.view">
+             <field name="name">hr.holidays.form.inherit</field>
+             <field name="model">hr.holidays</field>
+		     <field name="inherit_id" ref="hr_holidays.view_hr_holidays_filter"/>
+           <field name="type">search</field>
+           <field name="arch" type="xml">
+                   <field name="holiday_status_id" position='after'>
+                     <field name="year"  widget='selection' /> 
+			  </field>
+			  </field>
+	     </record>
+       
+       
+       
+       
+       
+      <menuitem name="Leaves Year" parent="hr.menu_hr_root" id="menu_Leave_kt_holidays" sequence="5"/> 
+       
+	    <record id="kt_hr_holidays_holidays_status" model="ir.ui.view">
+             <field name="name">hr.holidays.status.form.inherit</field>
+             <field name="model">hr.holidays.status</field>
+		     <field name="inherit_id" ref="hr_holidays.edit_holiday_status_form"/>
+           <field name="type">form</field>
+           <field name="arch" type="xml">
+                   <field name="limit" position="after">
+                     <field name="no_rules" />  <!-- this field is to tell don;t apply any leave polacy -->
+                      <field name="carry_forward_to_nextyear" />
+                     <field name="carry_forwarded" />  <!-- this field is to tell don;t apply any leave polacy -->
+                   </field>
+                   
+			  </field>
+	     </record>
+       
+        <!-- TO add fields in employee master -->
+	    <record model="ir.ui.view" id="employee_view_inherit_kt">
+	            <field name="name">Hr Employee</field>
+	            <field name="model">hr.employee</field>
+	            <field name="inherit_id" ref="hr.view_employee_form"/>
+	            <field name="type">form</field>
+	            <field name="arch" type="xml">
+	                <field name="parent_id" position="after">
+	                       <field name="date_of_join"/>
+	                        <field name="emp_id"/> 
+	                       <field name="get_email"/><!-- Recieves emails -->
+	                       <field name="week_off_on_sat"/><!-- saturaday allow off -->
+                               <field name="ishr"/>
+	                        <field name="allocated" invisible="1"/>
+	                       <button name="allocate_leaves" string="Allocate Leaves" type="object" colspan="2"  attrs="{'invisible': [('allocated','=',1)]}"/>
+	                       
+	                </field>
+	                <field name="address_id" position="after">
+	                       <field name="current_address_id"/>
+<!--  commented to install -->	                </field>
+	               
+	                <page string="Personal Information" position="after">
+	                <page string="Emergency Contact Details">
+	                 <group colspan="2" col="2" groups="base.group_extended" > <!-- groups="base.group_extended" -->
+	                 <separator string="Primary Contact Details" colspan="2"/>
+	               
+	                   <field name="primary_cname"/>
+	                   <field name="primary_cnumbre"/>
+	                   <field name="primary_crelation"/>
+	                </group>
+	                
+	                <group colspan="2" col="2" groups="base.group_extended"> <!-- groups="base.group_extended" -->
+	                 <separator string="Secondary Contact Details" colspan="2"/>
+	                 
+	                   <field name="secondar_sname"/>
+	                   <field name="secondar_snumber"/>
+	                   <field name="secondar_srelation"/>
+	                </group>
+	                
+	                </page>
+	                
+	                
+	                
+	             </page>
+	                
+	            </field>
+	    </record>
+	    
+	    <record id="kt_hr_holidays_holidays" model="ir.ui.view">
+             <field name="name">hr.holidays.form.inherit</field>
+             <field name="model">hr.holidays</field>
+		     <field name="inherit_id" ref="hr_holidays.edit_holiday_new"/>
+           <field name="type">form</field>
+           <field name="arch" type="xml">
+                   <field name="department_id" position="after">              <!-- aug30  manager_id is not there in parent view -->
+                    
+                     <field name="for_lop" invisible="1"/>
+-                    </field>
+                   <field name="date_from" position="replace">
+                       <field name="date_from" on_change="onchange_date_from(date_to, date_from,employee_id,holiday_status_id)" required="1"/>
+                   </field>
+                   <field name="date_to" position="replace">
+                       <field name="date_to" on_change="onchange_date_from(date_to, date_from,employee_id,holiday_status_id)" required="1"/>
+                   </field>
+                   <!-- the button is replaced because when leaves is created dyanamically its approve button is not working -->
+                   <button  name="validate" position="replace">
+                        <button string="Approve" name="lop_validate" states="confirm" type="object" icon="gtk-apply" groups="base.group_hr_user"/>
+                        <button string="Set to Draft" name="set_to_draft" type="object" icon="gtk-convert" groups="base.group_hr_user,base.group_hr_manager"  attrs="{'invisible': ['|','|',('for_lop','=',False),('state','=','validate'),('state','=','draft')]}"/>
+                   </button>
+                   
+				 
+			  </field>
+	     </record>
+	     
+<!-- 	    leave year view    -->
+    <record id="view_leave_year_leaves" model="ir.ui.view">
+           <field name="name">hr.holidays.filter</field>
+           <field name="model">leave.year</field>
+           <field name="type">search</field>
+           <field name="arch" type="xml">
+               <search string="Leave Year">
+                <field name="name" />
+                <field name="year" />
+               </search>
+           </field>
+       </record>
+  
+    <record model="ir.ui.view" id="employee_leavesview_leave_year_leaves">
+           <field name="name">Employee Leave</field>
+           <field name="model">leave.year</field>
+           <field name="type">tree</field>
+           <field name="arch" type="xml">
+               <tree string="Leave Year">
+                <field name="name" />
+                 <field name="year" />
+               </tree>
+           </field>
+       </record>
+  
+    <record model="ir.ui.view" id="employee_leaves_view_leave_year_leaves">
+           <field name="name">Employee Leave</field>
+           <field name="model">leave.year</field>
+           <field name="type">form</field>
+           <field name="arch" type="xml">
+               <form string="LEAVE YEAR">
+                <field name="name" required="1" attrs="{'readonly': [('test','=',1)]}"/>
+                 <field name="year" required="1" attrs="{'readonly': [('test','=',1)]}"/>
+                  <field name="test" invisible="1" attrs="{'readonly': [('test','=',1)]}"/>
+                 <field colspan="4"  name="order_line" nolabel="1" widget="one2many_list" attrs="{'readonly': [('test','=',1)]}">
+                 <tree string="Leave Types" editable="top">
+	                 <field name="name"/>
+	                 <field name="alloc_leaves"/>
+	                 <field name="color_name" context="{'name':parent.name,'year':parent.year}"/>
+	                 
+	                  <field name="lop" context="{'lop':lop}"/>
+	                 <field name="carry_forwarded"/>
+	                  <field name="carry_fo_leaves"  attrs="{'invisible': [('carry_forwarded','!=',1)]}"/>
+                 </tree>
+                 </field>
+                 <button name="allocate_leaves" string="Allocate Leaves" type="object" colspan="2"  attrs="{'invisible': [('test','=',1)]}"/>
+               </form>
+           </field>
+       </record>
+      
+    
+        <record id="action_employee_view_leave_year_leaves" model="ir.actions.act_window">
+            <field name="name">LEAVE YEAR</field>
+            <field name="res_model">leave.year</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="employee_leavesview_leave_year_leaves"/>
+            <field name="search_view_id" ref="view_leave_year_leaves"/>
+        </record>
+      
+   <menuitem name="Leave Year" parent="menu_Leave_kt_holidays" id="action_Leaves_per_year_menu" action="action_employee_view_leave_year_leaves" />
+  
+<!--   Carry Forwarded  -->
+
+
+    <record id="view_Carry_Forward_year_leaves" model="ir.ui.view">
+           <field name="name">Carry Forward Leaves</field>
+           <field name="model">carry.forwarded</field>
+           <field name="type">search</field>
+           <field name="arch" type="xml">
+               <search string="Leave Year">
+                <field name="from_year" />
+                <field name="to_year" />
+               </search>
+           </field>
+       </record>
+  
+    <record model="ir.ui.view" id="employee_Carry_Forward_leave_year_leaves">
+           <field name="name">Carry Forward Leaves</field>
+           <field name="model">carry.forwarded</field>
+           <field name="type">tree</field>
+           <field name="arch" type="xml">
+               <tree string="Carry Forward">
+                <field name="from_year" />
+                 <field name="to_year" />
+               </tree>
+           </field>
+       </record>
+  
+    <record model="ir.ui.view" id="employee_Carry_Forwardleave_year_leaves">
+           <field name="name">carry forwarded</field>
+           <field name="model">carry.forwarded</field>
+           <field name="type">form</field>
+           <field name="arch" type="xml">
+               <form string="Carry Forward">
+                 <field name="from_year" required="1" attrs="{'readonly': [('test','=',1)]}"/>
+                  <field name="to_year"  required="1" attrs="{'readonly': [('test','=',1)]}"/>
+                   <field name="test" invisible="1" />
+                 <button name="carry_forward_leaves" string="Allocate Carry Forward Leaves" type="object" colspan="2"  attrs="{'invisible': [('test','=',1)]}"/>
+               </form>
+           </field>
+       </record>
+      
+    
+        <record id="action_Carry_Forward_leaves" model="ir.actions.act_window">
+            <field name="name">Carry Forward</field>
+            <field name="res_model">carry.forwarded</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="employee_Carry_Forward_leave_year_leaves"/>
+            <field name="search_view_id" ref="view_Carry_Forward_year_leaves"/>
+        </record>
+      
+   <menuitem name="Carry Forward" parent="menu_Leave_kt_holidays" id="action_Carry_per_year_menu" action="action_Carry_Forward_leaves"/>
+  
+    
+
+<!-- 	    Public Holidays    -->
+    <record id="view_public_holidays_leaves" model="ir.ui.view">
+           <field name="name">Public Holidays</field>
+           <field name="model">public.holidays</field>
+           <field name="type">search</field>
+           <field name="arch" type="xml">
+               <search string="Public Holidays">
+                <field name="name" required="1"/>
+                <field name="date" required="1"/>
+                <field name="year" required="1"/>
+               </search>
+           </field>
+       </record>
+  
+    <record model="ir.ui.view" id="public_holidays_leaves_ktree_tree">
+           <field name="name">Public Holidays</field>
+           <field name="model">public.holidays</field>
+           <field name="type">tree</field>
+           <field name="arch" type="xml">
+               <tree string="Public Holidays">
+                <field name="name" />
+                <field name="date" />
+                <field name="year" />
+               </tree>
+           </field>
+       </record>
+  
+    <record model="ir.ui.view" id="public_holidays_leaves_ktree_form">
+           <field name="name">Public Holidays</field>
+           <field name="model">public.holidays</field>
+           <field name="type">form</field>
+           <field name="arch" type="xml">
+               <form string="Public Holidays">
+                   <field name="name" />
+                   <field name="date" />
+                   <field name="year" />
+               </form>
+           </field>
+       </record>
+      
+    
+        <record id="action_public_holidays" model="ir.actions.act_window">
+            <field name="name">Carry Forward</field>
+            <field name="res_model">public.holidays</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="public_holidays_leaves_ktree_tree"/>
+            <field name="search_view_id" ref="view_public_holidays_leaves"/>
+        </record>
+      
+   <menuitem name="Public Holidays" parent="menu_Leave_kt_holidays" id="action_public_holidays_menu" action="action_public_holidays"/>
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+	     
+	</data>
+</openerp>	    

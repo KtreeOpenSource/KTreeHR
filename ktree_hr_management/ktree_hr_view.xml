@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+ <record id="hr_job_form_inherit_ktree" model="ir.ui.view">
+        <field name="name">hr.job.form1</field>
+        <field name="model">hr.job</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="hr.view_hr_job_form"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+	                <field name="job_code"/>
+    	             <field name="month"/>
+            </field>
+        </field>
+ </record>
+    
+ <record id="hr_applicant_form_view_inherit" model="ir.ui.view">
+      <field name="name">hr.applicant.form.inherit</field>
+      <field name="model">hr.applicant</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref="hr_recruitment.crm_case_form_view_job"/>
+      <field name="arch" type="xml">
+             <field name="state" position="after">
+                 <button name="case_close_with_emp" string="Hire" states="done,cancel" type="object" icon="gtk-convert"/>
+             </field>
+ 			 <field name="type_id" position="after">         <!-- imp_pending  -->
+                <group>
+                <field name="imp_pending"/>
+                <field name="not_visiblel" invisible="1" />
+                </group>
+           </field>      <!--    colspan="4" -->	
+ 		
+			<field name="description" position="after">
+           		<notebook colspan="4">
+            		<page string="RESUME"  >
+            		<field name="resume_note" widget="text_html" nolabel="1"/>
+            		</page>
+            	</notebook>
+            </field>
+            
+            <!--       the below code is for view alignment                                     -->
+	    
+         	<xpath expr="//form/sheet/group/group//field[@name='source_id']" position="attributes">
+         	          <attribute name="invisible">1</attribute>
+         	</xpath>	
+         	  
+         	<xpath expr="//form/sheet/group/group//field[@name='priority']" position="after">
+         	          <field name="source_id" />
+         	</xpath>	
+         	  
+         	<xpath expr="//form/sheet/group/group//field[@name='reference']" position="attributes">
+         	          <attribute name="invisible">1</attribute>
+         	</xpath>	
+				
+			<xpath expr="//form/sheet/group/group//field[@name='type_id']" position="after">
+         	          <field name="reference" />
+         	</xpath>	
+     
+      </field>     
+ </record>
+    
+ <record id="hr_applicantform_inherit_ktree_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.form1</field>
+        <field name="model">hr.applicant</field>
+        <field name="type">tree</field>
+        <field name="inherit_id" ref="hr_recruitment.crm_case_tree_view_job"/>
+        <field name="arch" type="xml">
+            <field name="stage_id" position="after">  <!--    name="stage_id" -->
+                <field name="imp_pending"/>
+                <field name="not_visiblel" invisible="1" />
+            </field>
+        </field>
+ </record>  
+ 
+<!--  commented to make proper working hr applicant --> 
+    
+<!--       <record model="ir.actions.act_window" id="hr_recruitment.crm_case_categ0_act_job"> -->
+<!--             <field name="name">Applicants</field> -->
+<!--             <field name="res_model">hr.applicant</field> -->
+<!--             <field name="view_mode">kanban,tree,form,graph,calendar</field> -->
+<!--             <field name="view_id" eval="False"/> -->
+<!--             <field name="context">{'search_default_filter_inprogress':1,'search_default_filter_new':1}</field>  ,"search_default_department_id": department_id  -->
+<!--               <field name="domain">[('not_visiblel','=','TEST')]</field> -->
+<!--             <field name="search_view_id" ref="hr_recruitment.view_crm_case_jobs_filter"/> -->
+<!--             <field name="help">From this menu you can track applicants in the recruitment process and manage all operations: meetings, interviews, phone calls, etc. If you setup the email gateway, applicants and their attached CV are created automatically when an email is sent to jobs@yourcompany.com. If you install the document management modules, all documents (CV and motivation letters) are indexed automatically, so that you can easily search through their content.</field> -->
+<!--         </record> -->
+
+ 
+</data>
+</openerp>
